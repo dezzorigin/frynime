@@ -1,18 +1,56 @@
-import { getEpisode } from '@/lib/scraper';
+'use client';
+
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { getEpisode, type EpisodeDetail } from '@/lib/api';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, List, AlertCircle } from 'lucide-react';
 
-export default async function EpisodePage(props: { params: Promise<{ slug: string }> }) {
-  const params = await props.params;
-  const slug = params.slug;
-  const episode = await getEpisode(slug);
+function EpisodeContent() {
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('e') || '';
+  const [episode, setEpisode] = useState<EpisodeDetail | null | undefined>(undefined);
 
-  if (!episode.title) {
+  useEffect(() => {
+    let cancelled = false;
+    if (!slug) return;
+    getEpisode(slug).then((ep) => {
+      if (!cancelled) setEpisode(ep);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (!slug) {
     return (
       <div className="text-center py-20">
         <h1 className="text-2xl font-bold">Episode Not Found</h1>
         <p className="text-slate-500 mt-2">The episode you requested could not be loaded.</p>
-        <Link href="/" className="text-blue-500 hover:underline mt-4 inline-block">Return Home</Link>
+        <Link href="/" className="text-blue-500 hover:underline mt-4 inline-block">
+          Return Home
+        </Link>
+      </div>
+    );
+  }
+
+  if (episode === undefined) {
+    return (
+      <div className="flex flex-col gap-6 max-w-5xl mx-auto">
+        <div className="h-8 bg-zinc-900 rounded animate-pulse w-2/3" />
+        <div className="w-full aspect-video bg-zinc-900 rounded-xl animate-pulse" />
+      </div>
+    );
+  }
+
+  if (!episode) {
+    return (
+      <div className="text-center py-20">
+        <h1 className="text-2xl font-bold">Episode Not Found</h1>
+        <p className="text-slate-500 mt-2">The episode you requested could not be loaded.</p>
+        <Link href="/" className="text-blue-500 hover:underline mt-4 inline-block">
+          Return Home
+        </Link>
       </div>
     );
   }
@@ -24,8 +62,8 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
           <h1 className="text-2xl font-bold text-white">{episode.title}</h1>
         </div>
         {episode.allEpisodesSlug && (
-          <Link 
-            href={`/anime/${episode.allEpisodesSlug}`}
+          <Link
+            href={`/anime?id=${episode.allEpisodesSlug}`}
             className="flex items-center gap-2 text-sm font-bold text-black bg-white hover:bg-white/90 px-4 py-2 rounded-xl transition-colors shadow-lg"
           >
             <List className="w-4 h-4" /> All Episodes
@@ -36,31 +74,36 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
       {/* Video Player Section */}
       <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative border border-slate-800">
         {episode.iframeUrl ? (
-          <iframe 
-            src={episode.iframeUrl} 
-            allowFullScreen 
+          <iframe
+            src={episode.iframeUrl}
+            allowFullScreen
             className="w-full h-full border-0 absolute inset-0"
+            title={episode.title}
           ></iframe>
         ) : episode.videoUrl ? (
-          <video 
-            src={episode.videoUrl} 
-            controls 
+          <video
+            src={episode.videoUrl}
+            controls
             className="w-full h-full outline-none"
             controlsList="nodownload"
           ></video>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-4">
-             <AlertCircle className="w-12 h-12 text-slate-600" />
-             <p>No video player found for this episode.</p>
+            <AlertCircle className="w-12 h-12 text-slate-600" />
+            <p>No video player found for this episode.</p>
           </div>
         )}
       </div>
+      <p className="text-xs text-white/30 -mt-3">
+        Stream served by a third-party mirror (animeplay.cfd), not by Frynime. If the player is empty
+        or shows an error, the mirror is down or blocking your region — try again later.
+      </p>
 
       {/* Navigation */}
       <div className="flex items-center justify-between mt-2 pt-4 border-t border-white/10">
         {episode.prevEpisode ? (
-          <Link 
-            href={`/episode/${episode.prevEpisode}`}
+          <Link
+            href={`/episode?e=${episode.prevEpisode}`}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-colors font-bold text-sm border border-white/10"
           >
             <ChevronLeft className="w-4 h-4" /> Prev Episode
@@ -70,8 +113,8 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
         )}
 
         {episode.nextEpisode ? (
-          <Link 
-            href={`/episode/${episode.nextEpisode}`}
+          <Link
+            href={`/episode?e=${episode.nextEpisode}`}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition-colors font-bold text-sm shadow-lg shadow-blue-500/20"
           >
             Next Episode <ChevronRight className="w-4 h-4" />
@@ -84,14 +127,14 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
         <div className="mt-8">
           <h3 className="text-xl font-bold mb-4 text-white">Other Episodes</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {episode.episodeList.map((ep: {slug: string, title: string, info: string}) => (
-              <Link 
-                key={ep.slug} 
-                href={`/episode/${ep.slug}`}
+            {episode.episodeList.map((ep: { slug: string; title: string; info: string }) => (
+              <Link
+                key={ep.slug}
+                href={`/episode?e=${ep.slug}`}
                 className={`p-3 rounded-xl border text-sm font-bold transition-all ${
-                  ep.slug === slug 
-                  ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400' 
-                  : 'border-white/10 bg-[#0a0a0a] hover:border-white/20 hover:bg-white/5 text-white/60 hover:text-white'
+                  ep.slug === slug
+                    ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                    : 'border-white/10 bg-[#0a0a0a] hover:border-white/20 hover:bg-white/5 text-white/60 hover:text-white'
                 }`}
               >
                 <div className="truncate">{ep.title}</div>
@@ -102,5 +145,13 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
         </div>
       )}
     </div>
+  );
+}
+
+export default function EpisodePage() {
+  return (
+    <Suspense>
+      <EpisodeContent />
+    </Suspense>
   );
 }

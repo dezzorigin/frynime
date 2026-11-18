@@ -43,10 +43,10 @@ export function Footer() {
             </div>
 
             <div className="flex flex-col gap-3 col-span-2 sm:col-span-1">
-              <span className="text-xs font-bold text-zinc-400 tracking-wider uppercase">Socials</span>
-              <a href="#" className="text-sm text-zinc-400 hover:text-cyan-400 transition-colors">Discord</a>
-              <a href="#" className="text-sm text-zinc-400 hover:text-cyan-400 transition-colors">Telegram</a>
-              <a href="#" className="text-sm text-zinc-400 hover:text-cyan-400 transition-colors">Twitter</a>
+              <span className="text-xs font-bold text-zinc-400 tracking-wider uppercase">Project</span>
+              <a href="https://github.com/dezzorigin/frynime" target="_blank" rel="noreferrer" className="text-sm text-zinc-400 hover:text-cyan-400 transition-colors">GitHub</a>
+              <a href="https://github.com/dezzorigin/frynime/issues" target="_blank" rel="noreferrer" className="text-sm text-zinc-400 hover:text-cyan-400 transition-colors">Report a bug</a>
+              <Link href="/faq" className="text-sm text-zinc-400 hover:text-cyan-400 transition-colors">FAQs</Link>
             </div>
           </div>
         </div>
