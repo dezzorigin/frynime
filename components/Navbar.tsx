@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Compass, Calendar, Heart, Search, Bell, X, MonitorPlay } from 'lucide-react';
+import { Home, Compass, Calendar, Heart, Search, Bell, X, MonitorPlay, Github } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export function Navbar() {
@@ -13,7 +13,16 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    setMounted(true);
+    // Defer past first paint: reading localStorage during render would
+    // differ between the prerendered shell and the hydrated page.
+    const t = setTimeout(() => {
+      try {
+        setMounted(true);
+      } catch {
+        setMounted(true);
+      }
+    }, 0);
+    return () => clearTimeout(t);
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -55,6 +64,15 @@ export function Navbar() {
             <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-cyan-500 rounded-full border-2 border-zinc-950 shadow shadow-cyan-500/50"></span>
           </Link>
+          <a
+            href="https://github.com/dezzorigin/frynime"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Lihat di GitHub"
+            className="p-2 text-zinc-400 hover:text-white transition-colors"
+          >
+            <Github className="w-5 h-5" />
+          </a>
         </div>
 
         {/* Expandable Slide-down Mobile Search Bar */}
@@ -149,6 +167,18 @@ export function Navbar() {
 
         {/* Sidebar Footer */}
         <div className="pt-6 border-t border-zinc-800/40 flex flex-col gap-4">
+          <a
+            href="https://github.com/dezzorigin/frynime"
+            target="_blank"
+            rel="noreferrer"
+            className="group flex items-center justify-between p-3 rounded-xl bg-zinc-900/30 hover:bg-zinc-900/60 border border-zinc-800/40 hover:border-zinc-800 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Github className="w-4 h-4 text-cyan-400" />
+              <span className="text-xs text-zinc-300 font-medium">Lihat di GitHub</span>
+            </div>
+            <span className="text-[10px] text-zinc-500 font-bold">open source</span>
+          </a>
           <Link href="/schedule" className="group flex items-center justify-between p-3 rounded-xl bg-zinc-900/30 hover:bg-zinc-900/60 border border-zinc-800/40 hover:border-zinc-800 transition-colors">
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4 text-cyan-400" />
