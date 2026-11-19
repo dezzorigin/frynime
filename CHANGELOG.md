@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — og-preview
+
+- **Link preview (Open Graph + Twitter Card).** `app/layout.tsx` now sets
+  `metadataBase`, `openGraph` and `twitter` metadata (absolute
+  `og:image`/`twitter:image` at `https://frynime.pages.dev/og-image.png`),
+  so links pasted in WhatsApp/Telegram render a preview card.
+- **`public/og-image.png` (1200x630).** Real screenshot of the landing hero,
+  taken from a local static-export build (Jikan API is unreachable from the
+  sandbox VM, so the trending-poster row renders its empty state — see
+  `docs/testing.md`).
+
 ## v1.1.0 — 2026-11-18 (proper rebuild)
 
 - **Static export for Cloudflare Pages.** `next.config.ts`: `output: 'export'`
