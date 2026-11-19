@@ -10,7 +10,28 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Frynime - Tempat Nonton Anime Sub Indo Gratis Terbaik',
   description: 'Nonton streaming anime subtitle Indonesia gratis terlengkap dengan resolusi tinggi. Tanpa iklan ribet, tanpa registrasi. Frynime adalah website nonton anime online gratis terbaik.',
+  metadataBase: new URL('https://frynime.pages.dev'),
   icons: { icon: '/icon.svg' },
+  openGraph: {
+    title: 'Frynime - Tempat Nonton Anime Sub Indo Gratis Terbaik',
+    description: 'Nonton streaming anime subtitle Indonesia gratis terlengkap dengan resolusi tinggi. Tanpa iklan ribet, tanpa registrasi. Frynime adalah website nonton anime online gratis terbaik.',
+    type: 'website',
+    url: 'https://frynime.pages.dev',
+    images: [
+      {
+        url: 'https://frynime.pages.dev/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Frynime — nonton anime subtitle Indonesia gratis',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Frynime - Tempat Nonton Anime Sub Indo Gratis Terbaik',
+    description: 'Nonton streaming anime subtitle Indonesia gratis terlengkap dengan resolusi tinggi. Tanpa iklan ribet, tanpa registrasi. Frynime adalah website nonton anime online gratis terbaik.',
+    images: ['https://frynime.pages.dev/og-image.png'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
